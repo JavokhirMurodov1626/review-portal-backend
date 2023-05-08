@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String?
+  name      String
+  image     String?
+  role      UserRole @default(USER)
+  provider  AuthProvider
+  providerId String?
+  reviews   Review[]
+  comments  Comment[]
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum AuthProvider {
+  EMAIL
+  GOOGLE
+  FACEBOOK
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  title     String
+  description String
+  productGrade Int
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  product     Product    @relation(fields: [productId], references: [id])
+  productId   Int
+  group     String
+  tags      Tag[]    @relation("ReviewTags")
+  content   String
+  images    String[]
+  rating    Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  comments  Comment[]
+  likes     Int?
+  isLiked   Boolean
+}
+
+model Product {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  reviews Review[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  review    Review   @relation(fields: [reviewId], references: [id])
+  reviewId  Int
+  createdAt DateTime @default(now())
+}
+
+model Tag {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  reviews Review[] @relation("ReviewTags")
+}
