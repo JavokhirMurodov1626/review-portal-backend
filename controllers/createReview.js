@@ -61,7 +61,7 @@ const createReview = async (req, res) => {
     } = req.body;
 
     const imageUrls = await uploadImages(images);
-    
+
     let product = await prisma.product.findUnique({
       where: { name: productName },
     });
@@ -79,32 +79,32 @@ const createReview = async (req, res) => {
       where: { name: { in: tags } },
     });
 
-    let newTags;
+    let newTags=[];
 
     if (existingTags.length == 0) {
-      newTags = tags.map(async (tagName) => {
+      newTags = await Promise.all(tags.map(async (tagName) => {
         return await prisma.tag.create({
           data: {
             name: tagName,
           },
         });
-      });
+      }));
     } else {
+
       // extracting stored tag names
       const existingTagNames = existingTags.map((tag) => tag.name);
-
       // find new added tags
       const newTagNames = tags.filter(
         (tagName) => !existingTagNames.includes(tagName)
       );
 
-      newTags = newTagNames.map(async (tagName) => {
+      newTags =await Promise.all(newTagNames.map(async (tagName) => {
         return await prisma.tag.create({
           data: {
             name: tagName,
           },
         });
-      });
+      }));
     }
 
     const allTags = [...existingTags, ...newTags];
@@ -139,3 +139,15 @@ const createReview = async (req, res) => {
 module.exports = {
   createReview,
 };
+
+// try{
+//   const allReviews=await prisma.review.findMany({
+//     select:{
+//       tags:true,
+//       images:true
+//     }
+//   })
+//   res.send(allReviews)
+// }catch(error){
+//   res.error(400).json({error:'I have error!'})
+// }
