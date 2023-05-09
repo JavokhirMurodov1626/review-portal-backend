@@ -6,7 +6,7 @@ const getLastReviews = async (req, res) => {
 
     let aweekAgo = new Date();
 
-    aweekAgo.setDate(aweekAgo.getDate() - 7);
+    aweekAgo.setDate(aweekAgo.getDate() - 2);
 
     // get reviews that have been posted for last week
     const lastReviews = await prisma.review.findMany({
@@ -14,7 +14,10 @@ const getLastReviews = async (req, res) => {
         createdAt: {
           gte: aweekAgo,
           lte: currentDate,
-        },
+        }
+      },
+      orderBy: {
+        createdAt: "desc"
       },
       select: {
         id:true,

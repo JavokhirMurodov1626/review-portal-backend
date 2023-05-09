@@ -17,6 +17,8 @@ model User {
   provider  AuthProvider
   providerId String?
   reviews   Review[]
+  ratings   Rating[]
+  likes     Like[]
   comments  Comment[]
 }
 
@@ -44,12 +46,11 @@ model Review {
   tags      Tag[]    @relation("ReviewTags")
   content   String
   images    String[]
-  rating    Float?
+  rating    Rating[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   comments  Comment[]
-  likes     Int?
-  isLiked   Boolean @default(false)
+  likes     Like[]
 }
 
 model Product {
@@ -57,7 +58,22 @@ model Product {
   name    String   @unique
   reviews Review[]
 }
+model Rating {
+  id        Int    @id @default(autoincrement())
+  value     Int
+  author      User   @relation(fields: [authorId], references: [id])
+  authorId    Int
+  review    Review @relation(fields: [reviewId], references: [id])
+  reviewId  Int
+}
 
+model Like {
+  id        Int    @id @default(autoincrement())
+  author     User   @relation(fields: [authorId], references: [id])
+  authorId    Int
+  review    Review @relation(fields: [reviewId], references: [id])
+  reviewId  Int
+}
 model Comment {
   id        Int      @id @default(autoincrement())
   content   String

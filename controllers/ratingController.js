@@ -1,43 +1,59 @@
-const { prisma } = require('../prismaClient');
+const { prisma } = require("../prismaClient");
 
 const addRating = async (req, res) => {
   try {
-    const { reviewId } = req.params;
-    const { value } = req.body;
-    const { id: authorId } = req.user;
+    const { text, rate, authorId, reviewId } = req.body;
 
-    const existingRating = await prisma.rating.findFirst({
+    let existingRating = await prisma.rating.findFirst({
       where: {
         authorId,
-        reviewId: Number(reviewId),
+        reviewId,
       },
     });
 
     if (existingRating) {
-      return res.status(400).json({
-        status: "error",
-        message: "You have already rated this review.",
+      await prisma.rating.updateMany({
+        where: {
+          authorId,
+          reviewId,
+        },
+        data: {
+          value: rate,
+        },
+      });
+    } else {
+      // if there is no such rating create new one and assign it to existingRating variable
+      existingRating = await prisma.rating.create({
+        data: {
+          value: rate,
+          author: { connect: { id: authorId } },
+          review: { connect: { id: reviewId } },
+        },
       });
     }
+    // existingRating = await prisma.rating.findFirst({
+    //   where: {
+    //     authorId,
+    //     reviewId,
+    //   },
+    // });
 
-    const newRating = await prisma.rating.create({
+    const newComment = await prisma.comment.create({
       data: {
-        value: Number(value),
+        content: text,
         author: { connect: { id: authorId } },
-        review: { connect: { id: Number(reviewId) } },
+        review: { connect: { id: reviewId } },
       },
     });
 
     res.status(201).json({
-      status: "success",
-      data: {
-        rating: newRating,
-      },
+      message: "successfully submitted",
+      rating: existingRating,
+      comment: newComment,
     });
   } catch (error) {
     res.status(400).json({
-      status: "error",
-      message: error.message,
+      error: error.message,
     });
   }
 };
