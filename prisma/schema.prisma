@@ -49,7 +49,7 @@ model Review {
   updatedAt DateTime @updatedAt
   comments  Comment[]
   likes     Int?
-  isLiked   Boolean
+  isLiked   Boolean @default(false)
 }
 
 model Product {
