@@ -62,7 +62,7 @@ model Rating {
   id        Int    @id @default(autoincrement())
   value     Int
   author      User   @relation(fields: [authorId], references: [id])
-  authorId    Int
+  authorId    Int 
   review    Review @relation(fields: [reviewId], references: [id])
   reviewId  Int
 }

@@ -3,7 +3,7 @@ const { prisma } = require("../prismaClient");
 const getReview = async (req, res) => {
   try {
     const reviewId = req.body.id;
-    const selectedReview = await prisma.review.findFirst({
+    const selectedReview = await prisma.review.findUnique({
       where: {
         id: reviewId,
       },
@@ -12,7 +12,8 @@ const getReview = async (req, res) => {
         product: true,
         tags: true,
         rating:true,
-        likes:true
+        likes:true,
+        comments:true
       },
     });
 
