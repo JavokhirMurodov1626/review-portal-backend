@@ -8,12 +8,32 @@ const getReview = async (req, res) => {
         id: reviewId,
       },
       include: {
-        author: true,
-        product: true,
+        author: {
+          select:{
+            name:true,
+            image:true,
+          }
+        },
+        product: {
+          select:{
+            name:true
+          }
+        },
         tags: true,
         rating:true,
         likes:true,
-        comments:true
+        comments:{
+          select:{
+            author:{
+              select:{
+                name:true,
+                image:true
+              }
+            },
+            content:true,
+            createdAt:true
+          }
+        }
       },
     });
 
