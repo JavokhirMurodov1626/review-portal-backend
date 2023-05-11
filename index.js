@@ -1,6 +1,7 @@
 const express = require("express");
 const authRoutes = require("./routes/authRoutes");
 const reviewRoutes = require("./routes/reviewRouter");
+const userAccountRoutes = require("./routes/userAccountRoutes");
 const passport = require("passport");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -17,6 +18,7 @@ app.use(passport.initialize());
 
 app.use("/", authRoutes);
 app.use("/review", reviewRoutes);
+app.use("/users/:id/account",userAccountRoutes)
 
 app.get("/", (req, res) => {
   res.send("This is a homepage!");
