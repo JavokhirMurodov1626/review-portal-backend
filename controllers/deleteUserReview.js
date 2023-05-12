@@ -34,7 +34,7 @@ const deleteUserReview = async (req, res) => {
     });
 
     // deleteImages from cloud
-    const deletedImages=deleteCloudImages(reviewImages.images);
+    const deletedImages= await deleteCloudImages(reviewImages.images);
 
     const deletedReview = await prisma.review.delete({
       where: {
@@ -53,4 +53,5 @@ const deleteUserReview = async (req, res) => {
 
 module.exports = {
   deleteUserReview,
+  deleteCloudImages
 };

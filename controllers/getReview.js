@@ -2,7 +2,9 @@ const { prisma } = require("../prismaClient");
 
 const getReview = async (req, res) => {
   try {
+    
     const reviewId = req.body.id;
+
     const selectedReview = await prisma.review.findUnique({
       where: {
         id: reviewId,
@@ -17,12 +19,6 @@ const getReview = async (req, res) => {
         product: {
           select: {
             name: true,
-          },
-        },
-        images: {
-          select: {
-            imageUrl: true,
-            filename: true,
           },
         },
         tags: true,
@@ -42,7 +38,7 @@ const getReview = async (req, res) => {
         },
       },
     });
-    
+
     res.status(201).json({
       message: "Selected Review successfully rendered!",
       review: selectedReview,
