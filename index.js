@@ -18,7 +18,7 @@ app.use(passport.initialize());
 
 app.use("/", authRoutes);
 app.use("/review", reviewRoutes);
-app.use("/users/:id/account",userAccountRoutes)
+app.use("/users/:id/account", userAccountRoutes);
 
 app.get("/", (req, res) => {
   res.send("This is a homepage!");

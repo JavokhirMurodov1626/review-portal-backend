@@ -44,10 +44,10 @@ const getLastReviews = async (req, res) => {
         },
         images: true,
         createdAt: true,
-        rating: true
+        rating: true,
       },
     });
-    
+
     const higherGradeReviews = await prisma.review.findMany({
       where: {
         productGrade: {
@@ -81,20 +81,20 @@ const getLastReviews = async (req, res) => {
           },
         },
         images: {
-          select:{
-            imageUrl:true,
-            filename:true
-          }
+          select: {
+            imageUrl: true,
+            filename: true,
+          },
         },
         createdAt: true,
-        rating: true
+        rating: true,
       },
     });
 
     res.status(201).json({
       message: "LastReviews successfully rendered!",
       lastReviews,
-      higherGradeReviews
+      higherGradeReviews,
     });
   } catch (error) {
     res.status(400).json({ error: error.message });

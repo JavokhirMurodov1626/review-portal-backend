@@ -10,4 +10,4 @@ router.post("/", getUserReviews);
 router.post("/reviews/:id/delete", protect, deleteUserReview);
 router.post("/reviews/:id/edit", protect, editReview);
 
-module.exports = router;
+module.exports = router; 
