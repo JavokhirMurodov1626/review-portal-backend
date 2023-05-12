@@ -45,7 +45,7 @@ model Review {
   group     String
   tags      Tag[]    @relation("ReviewTags")
   content   String
-  images    String[]
+  images    Image[]
   rating    Rating[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -63,7 +63,7 @@ model Rating {
   value     Int
   author      User   @relation(fields: [authorId], references: [id])
   authorId    Int 
-  review    Review @relation(fields: [reviewId], references: [id])
+  review    Review @relation(fields: [reviewId], references: [id],onDelete: Cascade)
   reviewId  Int
 }
 
@@ -71,7 +71,7 @@ model Like {
   id        Int    @id @default(autoincrement())
   author     User   @relation(fields: [authorId], references: [id])
   authorId    Int
-  review    Review @relation(fields: [reviewId], references: [id])
+  review    Review @relation(fields: [reviewId], references: [id],onDelete: Cascade)
   reviewId  Int
 }
 model Comment {
@@ -79,7 +79,7 @@ model Comment {
   content   String
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int
-  review    Review   @relation(fields: [reviewId], references: [id])
+  review    Review   @relation(fields: [reviewId], references: [id],onDelete: Cascade)
   reviewId  Int
   createdAt DateTime @default(now())
 }
@@ -88,4 +88,13 @@ model Tag {
   id      Int      @id @default(autoincrement())
   name    String   @unique
   reviews Review[] @relation("ReviewTags")
+}
+
+model Image{
+  id  Int  @id @default(autoincrement())
+  imageUrl String
+  filename String
+  review  Review @relation(fields: [reviewId],references: [id],onDelete: Cascade)
+  reviewId Int
+  generation String
 }

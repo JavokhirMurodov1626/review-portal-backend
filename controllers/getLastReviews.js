@@ -80,7 +80,12 @@ const getLastReviews = async (req, res) => {
             name: true,
           },
         },
-        images: true,
+        images: {
+          select:{
+            imageUrl:true,
+            filename:true
+          }
+        },
         createdAt: true,
         rating: true
       },

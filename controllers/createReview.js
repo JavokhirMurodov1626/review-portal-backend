@@ -36,10 +36,14 @@ const uploadImages = async (base64Images) => {
 
       await file.makePublic();
 
+      const [metadata] = await file.getMetadata();
+
+      const generation = metadata.generation;
+
       // Generate a public URL for the uploaded image
       const imageUrl = `https://storage.googleapis.com/${process.env.GCLOUD_BUCKET_NAME}/${filename}`;
 
-      return imageUrl;
+      return { imageUrl, filename, generation };
     })
   );
 
@@ -60,7 +64,7 @@ const createReview = async (req, res) => {
       images,
     } = req.body;
 
-    const imageUrls = await uploadImages(images);
+    const cloudImages = await uploadImages(images);
 
     let product = await prisma.product.findUnique({
       where: { name: productName },
@@ -79,18 +83,19 @@ const createReview = async (req, res) => {
       where: { name: { in: tags } },
     });
 
-    let newTags=[];
+    let newTags = [];
 
     if (existingTags.length == 0) {
-      newTags = await Promise.all(tags.map(async (tagName) => {
-        return await prisma.tag.create({
-          data: {
-            name: tagName,
-          },
-        });
-      }));
+      newTags = await Promise.all(
+        tags.map(async (tagName) => {
+          return await prisma.tag.create({
+            data: {
+              name: tagName,
+            },
+          });
+        })
+      );
     } else {
-
       // extracting stored tag names
       const existingTagNames = existingTags.map((tag) => tag.name);
       // find new added tags
@@ -98,13 +103,15 @@ const createReview = async (req, res) => {
         (tagName) => !existingTagNames.includes(tagName)
       );
 
-      newTags =await Promise.all(newTagNames.map(async (tagName) => {
-        return await prisma.tag.create({
-          data: {
-            name: tagName,
-          },
-        });
-      }));
+      newTags = await Promise.all(
+        newTagNames.map(async (tagName) => {
+          return await prisma.tag.create({
+            data: {
+              name: tagName,
+            },
+          });
+        })
+      );
     }
 
     const allTags = [...existingTags, ...newTags];
@@ -120,7 +127,13 @@ const createReview = async (req, res) => {
           connect: allTags.map((tag) => ({ id: tag.id })),
         },
         content,
-        images: imageUrls,
+        images: {
+          create: cloudImages.map((image) => ({
+            imageUrl: image.imageUrl,
+            filename: image.filename,
+            generation: image.generation,
+          })),
+        },
         productGrade,
       },
       include: {
@@ -139,15 +152,3 @@ const createReview = async (req, res) => {
 module.exports = {
   createReview,
 };
-
-// try{
-//   const allReviews=await prisma.review.findMany({
-//     select:{
-//       tags:true,
-//       images:true
-//     }
-//   })
-//   res.send(allReviews)
-// }catch(error){
-//   res.error(400).json({error:'I have error!'})
-// }

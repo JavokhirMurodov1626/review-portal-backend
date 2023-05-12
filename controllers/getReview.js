@@ -9,34 +9,40 @@ const getReview = async (req, res) => {
       },
       include: {
         author: {
-          select:{
-            name:true,
-            image:true,
-          }
+          select: {
+            name: true,
+            image: true,
+          },
         },
         product: {
-          select:{
-            name:true
-          }
+          select: {
+            name: true,
+          },
+        },
+        images: {
+          select: {
+            imageUrl: true,
+            filename: true,
+          },
         },
         tags: true,
-        rating:true,
-        likes:true,
-        comments:{
-          select:{
-            author:{
-              select:{
-                name:true,
-                image:true
-              }
+        rating: true,
+        likes: true,
+        comments: {
+          select: {
+            author: {
+              select: {
+                name: true,
+                image: true,
+              },
             },
-            content:true,
-            createdAt:true
-          }
-        }
+            content: true,
+            createdAt: true,
+          },
+        },
       },
     });
-
+    
     res.status(201).json({
       message: "Selected Review successfully rendered!",
       review: selectedReview,
