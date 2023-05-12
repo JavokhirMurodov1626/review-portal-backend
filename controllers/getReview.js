@@ -22,7 +22,14 @@ const getReview = async (req, res) => {
           },
         },
         tags: true,
-        rating: true,
+        rating:{
+          select:{
+            id:true,
+            authorId:true,
+            reviewId:true,
+            value:true,
+          }
+        },
         images:{
           select:{
             id:true,
