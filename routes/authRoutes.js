@@ -26,8 +26,6 @@ router.get(
   passport.authenticate("google", { session: false }),
 
   (req, res) => {
-    const token = createToken(req.user);
-    req.user.token = token;
     res.redirect(
       `${process.env.API_URL}/auth/success?user=${JSON.stringify(req.user)}`
     );
@@ -36,15 +34,14 @@ router.get(
 
 router.get(
   "/auth/github",
-  passport.authenticate("github", { scope: ["user:email"] },)
+  passport.authenticate("github", { scope: ["user:email"], session: false })
 );
 
 router.get(
   "/auth/github/callback",
-  passport.authenticate("github", { session: false,}),
+  passport.authenticate("github", { session: false }),
   (req, res) => {
-    const token = createToken(req.user);
-    req.user.token = token;
+    console.log(req.user)
     res.redirect(
       `${process.env.API_URL}/auth/success?user=${JSON.stringify(req.user)}`
     );

@@ -3,6 +3,7 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const GitHubStrategy = require("passport-github2").Strategy;
 const { prisma } = require("./prismaClient");
 const jwt = require("jsonwebtoken");
+const { createToken } = require("./controllers/authController");
 
 passport.use(
   new GoogleStrategy(
@@ -13,6 +14,7 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
+        console.log(profile);
         let user = await prisma.user.findUnique({
           where: { email: profile.emails[0].value },
         });
@@ -29,9 +31,7 @@ passport.use(
           });
         }
 
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-          expiresIn: "1h",
-        });
+        const token = createToken(user);
 
         const currentUser = {
           userId: user.id,
@@ -57,9 +57,10 @@ passport.use(
       callbackURL: "/auth/github/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
+
       try {
         let user = await prisma.user.findUnique({
-          where: { email: profile.emails[0].value, provider: "GITHUB" },
+          where: { email: profile.emails[0].value },
         });
 
         if (!user) {
@@ -67,13 +68,24 @@ passport.use(
             data: {
               providerId: profile.id,
               provider: "GITHUB",
+              image: profile.photos[0].value,
               email: profile.emails[0].value,
               name: profile.displayName,
             },
           });
         }
 
-        return done(null, user);
+        const token = createToken(user);
+
+        const currentUser = {
+          userId: user.id,
+          name: user.name,
+          image: user.image,
+          token: token,
+          expiresIn: 3600,
+        };
+
+        return done(null, currentUser);
       } catch (error) {
         return done(error);
       }

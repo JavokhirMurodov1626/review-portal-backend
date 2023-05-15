@@ -31,7 +31,7 @@ enum UserRole {
 enum AuthProvider {
   EMAIL
   GOOGLE
-  FACEBOOK
+  GITHUB
 }
 
 model Review {
