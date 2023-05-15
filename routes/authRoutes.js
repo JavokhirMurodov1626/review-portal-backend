@@ -41,7 +41,6 @@ router.get(
   "/auth/github/callback",
   passport.authenticate("github", { session: false }),
   (req, res) => {
-    console.log(req.user)
     res.redirect(
       `${process.env.API_URL}/auth/success?user=${JSON.stringify(req.user)}`
     );
