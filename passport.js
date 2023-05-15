@@ -1,6 +1,6 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const { Strategy: FacebookStrategy } = require("passport-facebook");
+const GitHubStrategy = require("passport-github2").Strategy;
 const { prisma } = require("./prismaClient");
 const jwt = require("jsonwebtoken");
 
@@ -9,7 +9,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:3000/auth/google/callback",
+      callbackURL: "/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -50,26 +50,25 @@ passport.use(
 );
 
 passport.use(
-  new FacebookStrategy(
+  new GitHubStrategy(
     {
-      clientID: process.env.FACEBOOK_APP_ID,
-      clientSecret: process.env.FACEBOOK_APP_SECRET,
-      callbackURL: "/auth/facebook/callback",
-      profileFields: ["id", "emails", "name"],
+      clientID: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      callbackURL: "/auth/github/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
         let user = await prisma.user.findUnique({
-          where: { providerId: profile.id, provider: "FACEBOOK" },
+          where: { email: profile.emails[0].value, provider: "GITHUB" },
         });
 
         if (!user) {
           user = await prisma.user.create({
             data: {
               providerId: profile.id,
-              provider: "FACEBOOK",
+              provider: "GITHUB",
               email: profile.emails[0].value,
-              name: `${profile.name.givenName} ${profile.name.familyName}`,
+              name: profile.displayName,
             },
           });
         }
@@ -81,3 +80,5 @@ passport.use(
     }
   )
 );
+
+module.exports = { passport };

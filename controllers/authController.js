@@ -76,7 +76,7 @@ async function login(req, res) {
     res.status(400).json({ error: "Login failed" });
   }
 }
-
+ 
 const protect = async (req, res, next) => {
   try {
     const token = req.header("Authorization").split(" ")[1];
@@ -99,20 +99,21 @@ const protect = async (req, res, next) => {
   }
 };
 
-const googleCallback = async (req, res) => {
-  const user = req.user;
-  const token = createToken(user);
-  res.redirect(`/auth/success?token=${token}&user=${JSON.stringify(user)}`);
-};
+// const googleCallback = async (req, res) => {
+//   const user = req.user;
+//   const token = createToken(user);
+//   res.redirect(`/auth/success?token=${token}&user=${JSON.stringify(user)}`);
+// };
 
-const facebookCallback = async (req, res) => {
-  const user = req.user;
-  const token = createToken(user);
-  res.redirect(`/auth/success?token=${token}&user=${JSON.stringify(user)}`);
-};
+// const facebookCallback = async (req, res) => {
+//   const user = req.user;
+//   const token = createToken(user);
+//   res.redirect(`/auth/success?token=${token}&user=${JSON.stringify(user)}`);
+// };
 
 module.exports.register = register;
 module.exports.login = login;
-module.exports.googleCallback = googleCallback;
-module.exports.facebookCallback = facebookCallback;
+// module.exports.googleCallback = googleCallback;
+// module.exports.facebookCallback = facebookCallback;
 module.exports.protect = protect;
+module.exports.createToken = createToken;

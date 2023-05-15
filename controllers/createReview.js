@@ -34,12 +34,12 @@ const uploadImages = async (base64Images) => {
         },
       });
 
-      await file.makePublic();
-
+      
       const [metadata] = await file.getMetadata();
-
+      
       const generation = metadata.generation;
-
+      
+      await file.makePublic();
       // Generate a public URL for the uploaded image
       const imageUrl = `https://storage.googleapis.com/${process.env.GCLOUD_BUCKET_NAME}/${filename}`;
 

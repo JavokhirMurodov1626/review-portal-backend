@@ -7,10 +7,14 @@ const { getReview } = require("../controllers/getReview.js");
 const { sendComment } = require("../controllers/sendComment.js");
 const { likeReview } = require("../controllers/likeReviewController.js");
 const { unlikeReview } = require("../controllers/unlikeReview.js");
+const { getAllTags } = require("../controllers/getAllTags.js");
+const { getSearchedReview } = require("../controllers/full-text-search.js");
 
 const router = express.Router();
 
 router.get("/", getLastReviews);
+router.get("/tags", getAllTags);
+router.post("/search", getSearchedReview);
 router.post("/create", protect, createReview);
 router.post("/:id", getReview);
 router.post("/:id/like", protect, likeReview);
